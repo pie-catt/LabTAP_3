@@ -27,7 +27,7 @@ namespace TinyDependencyInjectionContainer
                 //Ignoro linee commenti
                 if (!line.StartsWith("#"))
                 {
-                    //Divido linea 
+                    //Divido linea nei token
                     var tokens = line.Split('*');
 
                     if (tokens.Length != 4) throw new FileFormatException("Formato file configurazione non valido");
@@ -36,29 +36,31 @@ namespace TinyDependencyInjectionContainer
                         !File.Exists(tokens[2])) throw new FileNotFoundException("File assembly non trovato");
 
                     //Carico Assembly per definizione interfaccia
-                    var _assemblyInt = Assembly.LoadFrom(tokens[0]);
+                    var assemblyInt = Assembly.LoadFrom(tokens[0]);
                     //Controllo se interfaccia presente in assembly
-                    if ((_assemblyInt.GetType(tokens[1])) == null)
+                    if ((assemblyInt.GetType(tokens[1])) == null)
                         throw new FileFormatException("Interfaccia" + tokens[1] + " non presente in assembly");
 
                     //Carico Assembly per implementazione interfaccia
-                    var _assemblyClass = Assembly.LoadFrom(tokens[2]);
+                    var assemblyClass = Assembly.LoadFrom(tokens[2]);
                     //Controllo se classe presente in assembly
-                    if ((_assemblyClass.GetType(tokens[3])) == null)
+                    if ((assemblyClass.GetType(tokens[3])) == null)
                         throw new FileFormatException("Classe" + tokens[3] + " non presente in Assembly");
 
                     //Associo interfaccia alla classe che la implementa
-                    _intClassAssociation.Add(_assemblyInt.GetType(tokens[1]), _assemblyClass.GetType(tokens[3]));
+                    _intClassAssociation.Add(assemblyInt.GetType(tokens[1]), assemblyClass.GetType(tokens[3]));
                 }
             }
         }
 
         public T Instantiate<T>() where T : class
         {
-            Type valueS;
-            _intClassAssociation.TryGetValue(typeof(T), out valueS);
+            //Se tipo T non presente nell'associazione restituisco null
+           if(!_intClassAssociation.TryGetValue(typeof(T), out var valueS))
+                return null;
+
             var ex = Activator.CreateInstance(valueS);
-            return (T)ex;
+                return (T)ex;
         }
 
     }
