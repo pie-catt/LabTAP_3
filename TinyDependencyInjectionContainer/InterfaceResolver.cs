@@ -6,27 +6,23 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TinyDependencyInjectionContainer
-{
-    public class InterfaceResolver
-    {
+namespace TinyDependencyInjectionContainer {
+
+    public class InterfaceResolver {
         //Associazioni Interfaccia -> Classe che la implementa
         private readonly Dictionary<Type, Type> _intClassAssociation = new Dictionary<Type, Type>();
 
-        public InterfaceResolver(string filename)
-        {
+        public InterfaceResolver(string filename) {
             //Controllo se file di configurazione null o non esiste
-            if(filename == null) throw new ArgumentNullException(nameof(filename));
-            if(!File.Exists(filename)) throw new FileNotFoundException(filename);
+            if (filename == null) throw new ArgumentNullException(nameof(filename));
+            if (!File.Exists(filename)) throw new FileNotFoundException(filename);
 
             //Leggo linee del file
             var fileLines = File.ReadAllLines(filename);
 
-            foreach (var line in fileLines)
-            {
+            foreach (var line in fileLines) {
                 //Ignoro linee commenti
-                if (!line.StartsWith("#"))
-                {
+                if (!line.StartsWith("#")) {
                     //Divido linea nei token
                     var tokens = line.Split('*');
 
@@ -53,23 +49,20 @@ namespace TinyDependencyInjectionContainer
             }
         }
 
-        public T Instantiate<T>() where T : class
-        {
+        public T Instantiate<T>() where T : class {
             //Se tipo T non presente nell'associazione restituisco null
-           if(!_intClassAssociation.TryGetValue(typeof(T), out var valueS))
+            if (!_intClassAssociation.TryGetValue(typeof(T), out var valueS))
                 return null;
 
             var ex = Activator.CreateInstance(valueS);
-                return (T)ex;
+            return (T)ex;
         }
 
     }
 
-    public class FileFormatException : Exception
-    {
+    public class FileFormatException : Exception {
         public FileFormatException(string message)
-            : base(message)
-        { 
+            : base(message) {
         }
     }
 
