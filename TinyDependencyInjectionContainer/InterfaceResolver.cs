@@ -48,12 +48,13 @@ namespace TinyDependencyInjectionContainer {
             }
         }
 
-        public T Instantiate<T>() where T : class {
+        public T Instantiate<T>(params object[] args) where T : class {
             //Se tipo T non presente nell'associazione restituisco null
             if (!_intClassAssociation.TryGetValue(typeof(T), out var type))
                 return null;
-
-            var typeInstance = Activator.CreateInstance(type);
+            //Se invocato senza argomenti cerca costruttore di default
+            //Solleva MissingMethodException se non c'e' un costruttore applicabile
+            var typeInstance = Activator.CreateInstance(type, args);
                 return (T)typeInstance;
         }
 
