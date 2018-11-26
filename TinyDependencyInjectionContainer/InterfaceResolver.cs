@@ -28,22 +28,23 @@ namespace TinyDependencyInjectionContainer {
 
                 if (!File.Exists(tokens[0]) ||
                     !File.Exists(tokens[2]))
-                    throw new FileNotFoundException("File assembly not found");
+                    throw new FileNotFoundException("Assembly File not found");
 
                 //Carico Assembly per definizione interfaccia
                 var assemblyInt = Assembly.LoadFrom(tokens[0]);
                 //Controllo se interfaccia presente in assembly
                 if (assemblyInt.GetType(tokens[1]) == null)
-                    throw new ConfigFileException("Interface" + tokens[1] + " not in Assembly");
+                    throw new ConfigFileException("Interface" + tokens[1] + " not in Assembly file");
 
                 //Carico Assembly per implementazione interfaccia
                 var assemblyClass = Assembly.LoadFrom(tokens[2]);
                 //Controllo se classe presente in assembly
                 if (assemblyClass.GetType(tokens[3]) == null)
-                    throw new ConfigFileException("Class" + tokens[3] + " not in Assembly");
+                    throw new ConfigFileException("Class" + tokens[3] + " not in Assembly file");
 
                 //Associo interfaccia alla classe che la implementa
-                _intClassAssociation.Add(assemblyInt.GetType(tokens[1]), assemblyClass.GetType(tokens[3]));
+                _intClassAssociation.Add(assemblyInt.GetType(tokens[1]), 
+                    assemblyClass.GetType(tokens[3]));
             }
         }
 
